@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voetly — Live voetbal scores, standen en schema</title>
+    <meta name="description" content="Voetly: dé iPhone-app voor internationale voetbalwedstrijden in 2026. Live scores, standen, topscorers en compleet toernooischema. Gratis. Geen ads, geen tracking.">
+    <meta name="theme-color" content="#0C1B3A">
+
+    <!-- Open Graph (voor delen op social) -->
+    <meta property="og:title" content="Voetly — Live voetbal in je broekzak">
+    <meta property="og:description" content="Live scores, standen, topscorers en toernooischema. Gratis. Geen ads, geen tracking.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://voetly.nl">
+
+    <!-- Favicon (kan later vervangen worden door echte) -->
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0C1B3A;
+            --navy-light: #132050;
+            --orange: #FF6B00;
+            --white: #FFFFFF;
+            --gray: #8B92A8;
+            --bg-gradient: linear-gradient(135deg, #0C1B3A 0%, #132050 100%);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== Header / Hero ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 36px;
+            background: var(--navy-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 60px rgba(255, 107, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-circle::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255, 107, 0, 0.2), transparent 70%);
+        }
+
+        .logo-ball {
+            font-size: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFC79D 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            color: var(--gray);
+            margin-bottom: 48px;
+            max-width: 600px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 6px 16px;
+            background: rgba(255, 107, 0, 0.15);
+            color: var(--orange);
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* ===== Features section ===== */
+        .features {
+            padding: 100px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 60px;
+            letter-spacing: -0.02em;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 32px 28px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 107, 0, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: rgba(255, 107, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* ===== Why section ===== */
+        .why {
+            padding: 80px 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .why-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .why-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .why-list li {
+            padding: 12px 20px;
+            background: rgba(0, 200, 150, 0.08);
+            border-radius: 100px;
+            color: #00C896;
+            font-weight: 600;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            padding: 60px 20px 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--orange);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* ===== Animatie ===== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-ball {
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 600px) {
+            .hero { padding: 20px 16px; }
+            .features { padding: 60px 16px; }
+            .why { padding: 60px 16px; }
+            .btn { padding: 14px 24px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="logo-circle">
+            <span class="logo-ball">⚽</span>
+        </div>
+
+        <h1>Voetly</h1>
+        <p class="tagline">Live voetbal in je broekzak. Scores, standen, topscorers en het hele toernooischema — in één app.</p>
+
+        <div class="cta-buttons">
+            <a href="https://testflight.apple.com/join/r2EXuvr8" class="btn btn-primary">
+                📱 TestFlight Beta
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                Meer info
+            </a>
+        </div>
+
+        <span class="status-badge">🚧 Binnenkort in de App Store</span>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <h2 class="section-title">Wat krijg je?</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚽</div>
+                <h3 class="feature-title">Live wedstrijden</h3>
+                <p class="feature-desc">Realtime scores met automatische updates. Zie elke goal, kaart en wissel zodra het gebeurt.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Standen per groep</h3>
+                <p class="feature-desc">Alle 12 groepen overzichtelijk. Zie direct wie doorgaat met onze kwalificatie-kleuren.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3 class="feature-title">Topscorers</h3>
+                <p class="feature-desc">Volg de doelpuntenmakers met goals, assists en speelminuten. Tik voor uitgebreide stats.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Knockout schema</h3>
+                <p class="feature-desc">Compleet bracket van Ronde van 32 tot de Finale. Inclusief 3e plaatswedstrijd.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3 class="feature-title">Opstellingen</h3>
+                <p class="feature-desc">Basis-XI, formatie, wisselspelers en coaches voor beide teams.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌗</div>
+                <h3 class="feature-title">Donker & licht thema</h3>
+                <p class="feature-desc">Volg je systeeminstelling, of kies zelf. NL en EN ondersteuning. Werkt ook offline.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why -->
+    <section class="why">
+        <div class="why-content">
+            <h2 class="section-title">Waarom Voetly?</h2>
+            <p style="color: var(--gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Een app die gewoon doet wat hij moet doen. Geen onnodige features, geen reclame, geen gedoe.
+            </p>
+            <ul class="why-list">
+                <li>✓ 100% gratis</li>
+                <li>✓ Geen advertenties</li>
+                <li>✓ Geen tracking</li>
+                <li>✓ Geen account nodig</li>
+                <li>✓ Werkt offline</li>
+                <li>✓ Privacy-vriendelijk</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://eduard-appmaker.github.io/wk2026live-policy/">Privacybeleid</a>
+            <a href="https://testflight.apple.com/join/r2EXuvr8">TestFlight Beta</a>
+            <a href="mailto:voetlyapp@gmail.com">Contact</a>
+        </div>
+        <p class="copyright">© 2026 Voetly — Gemaakt met ❤️ in Nederland</p>
+    </footer>
+
+</body>
+</html>
